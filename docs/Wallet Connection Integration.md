@@ -8,8 +8,6 @@ DeFi Staking Platform
 
 The objective of wallet integration is to allow users to securely connect blockchain wallets and interact with the staking smart contract.
 
----
-
 ## Wallet Provider
 
 The current implementation uses MetaMask as the primary wallet provider.
@@ -18,8 +16,6 @@ Technology Used:
 
 * MetaMask
 * Ethers.js
-
----
 
 ## Wallet Connection Workflow
 
@@ -36,8 +32,6 @@ Approve Connection
 Wallet Address Retrieved
 ↓
 Frontend Updated
-
----
 
 ## MetaMask Integration
 
@@ -57,9 +51,6 @@ const accounts =
 
 setAccount(accounts[0]);
 ```
-
----
-
 ## Connected Wallet Features
 
 After wallet connection, users can:
@@ -69,8 +60,6 @@ After wallet connection, users can:
 * Check Balance
 * Check Rewards
 * Sign Blockchain Transactions
-
----
 
 ## Wallet Security
 
@@ -82,8 +71,6 @@ The application relies on MetaMask for:
 * Secure wallet access
 
 Private keys are never stored inside the application.
-
----
 
 ## Future Wallet Support
 
@@ -106,8 +93,6 @@ Benefits:
 
 * User-friendly interface
 * Large user ecosystem
-
----
 
 ## Outcome
 
