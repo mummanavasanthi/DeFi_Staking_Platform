@@ -85,7 +85,7 @@ Balance Updated
 
 ### Vercel
 
-https://staking-dapp-three-kohl.vercel.app/
+https://de-fi-staking-platform.vercel.app/
 
 ## GitHub Repository
 
@@ -133,6 +133,5 @@ Detailed project documentation is available in the `docs` folder:
 * Time-Based Reward Distribution
 * Multi-Token Staking
 * Advanced Dashboard Analytics
-
 
 The DeFi Staking Platform successfully demonstrates blockchain-based staking functionality through smart contracts and a React frontend. The project integrates MetaMask, Ethers.js, Solidity, and SCAI Mainnet to provide a secure and user-friendly decentralized staking experience.
