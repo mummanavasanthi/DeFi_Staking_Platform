@@ -94,37 +94,7 @@ The frontend is built using React.js, Vite, and Ethers.js and provides:
 
 # 🔄 Application Workflow
 
-User
-
-⬇
-
-Connect MetaMask Wallet
-
-⬇
-
-Stake ETH
-
-⬇
-
-Balance Updated
-
-⬇
-
-Rewards Calculated
-
-⬇
-
-Claim Rewards
-
-⬇
-
-Withdraw ETH
-
-⬇
-
-Activity Updated
-
----
+User ---> Connect MetaMask Wallet ---> Stake ETH ---> Balance Updated ---> Rewards Calculated ---> Claim Rewards ---> Withdraw ETH ---> Activity Updated
 
 # 🛠️ Technology Stack
 
