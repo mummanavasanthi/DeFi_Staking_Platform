@@ -2,74 +2,120 @@ import { useState } from "react";
 import { ethers } from "ethers";
 import { CONTRACT_ADDRESS, ABI } from "./contract";
 
-function App() {
+import Navbar from "./components/Navbar";
+import StatsCards from "./components/StatsCards";
+import StakePanel from "./components/StakePanel";
+import NetworkInfo from "./components/NetworkInfo";
+import Footer from "./components/Footer";
+import RecentActivity from "./components/RecentActivity";
 
+function App() {
   const [account, setAccount] = useState("");
   const [amount, setAmount] = useState("");
   const [balance, setBalance] = useState("");
   const [reward, setReward] = useState("");
+  const [walletBalance, setWalletBalance] =
+    useState("");
+  const [activities, setActivities] =
+  useState([]);
 
   async function connectWallet() {
-    try {
+  try {
 
-      const provider =
-        new ethers.BrowserProvider(window.ethereum);
+    console.log("CONNECT START");
 
-      const accounts =
-        await provider.send(
-          "eth_requestAccounts",
-          []
-        );
-
-      setAccount(accounts[0]);
-
-    } catch (error) {
-      console.error(error);
+    if (!window.ethereum) {
+      alert("MetaMask not found");
+      return;
     }
+
+    console.log("ETHEREUM FOUND");
+
+    const provider =
+      new ethers.BrowserProvider(
+        window.ethereum
+      );
+
+    console.log("PROVIDER CREATED");
+
+    const accounts =
+      await provider.send(
+        "eth_requestAccounts",
+        []
+      );
+
+    console.log("ACCOUNTS:", accounts);
+
+    setAccount(accounts[0]);
+
+    await getWalletBalance();
+    await checkBalance();
+    await checkReward();
+
+  } catch (error) {
+
+    console.error(
+      "CONNECT ERROR:",
+      error
+    );
+
   }
+}
 
-  async function stakeETH() {
-    try {
+async function stakeETH() {
+  try {
+    const provider =
+      new ethers.BrowserProvider(
+        window.ethereum
+      );
 
-      const provider =
-        new ethers.BrowserProvider(window.ethereum);
+    const signer =
+      await provider.getSigner();
 
-      const signer =
-        await provider.getSigner();
+    const contract =
+      new ethers.Contract(
+        CONTRACT_ADDRESS,
+        ABI,
+        signer
+      );
 
-      const contract =
-        new ethers.Contract(
-          CONTRACT_ADDRESS,
-          ABI,
-          signer
-        );
-
-      const tx =
-        await contract.stake({
-          value: ethers.parseEther(amount)
-        });
+    const tx =
+      await contract.stake({
+        value:
+          ethers.parseEther(amount)
+      });
 
       await tx.wait();
-
+      setActivities(prev => [
+        {
+          type: "Stake ETH",
+          amount: `+${amount} ETH`,
+          time: "Just now",
+          color: "#22c55e"
+        },
+        ...prev
+      ]);
+      
       alert("Stake Successful");
 
-      await checkBalance();
-      await checkReward();
+    await getWalletBalance();
+    await checkBalance();
+    await checkReward();
 
-    } catch (error) {
+  } catch (error) {
 
-      console.error(error);
+    console.error(error);
 
-      alert("Stake Failed");
+    alert("Stake Failed");
 
-    }
   }
-
+}
   async function withdrawETH() {
     try {
-
       const provider =
-        new ethers.BrowserProvider(window.ethereum);
+        new ethers.BrowserProvider(
+          window.ethereum
+        );
 
       const signer =
         await provider.getSigner();
@@ -88,25 +134,70 @@ function App() {
 
       await tx.wait();
 
+      setActivities(prev => [
+        {
+          type: "Withdraw ETH",
+          amount: `-${amount} ETH`,
+          time: "Just now",
+          color: "#ef4444"
+        },
+        ...prev
+      ]);
+
       alert("Withdraw Successful");
 
+      await getWalletBalance();
       await checkBalance();
       await checkReward();
 
     } catch (error) {
-
       console.error(error);
-
       alert("Withdraw Failed");
-
     }
   }
+  async function claimReward() {
+  try {
 
+    const provider =
+      new ethers.BrowserProvider(
+        window.ethereum
+      );
+
+    const signer =
+      await provider.getSigner();
+
+    const contract =
+      new ethers.Contract(
+        CONTRACT_ADDRESS,
+        ABI,
+        signer
+      );
+
+    const tx =
+      await contract.claimReward();
+
+    await tx.wait();
+
+    alert("Reward Claimed");
+
+    await getWalletBalance();
+    await checkReward();
+
+  } catch (error) {
+
+    console.error(error);
+
+    alert("Claim Failed");
+
+  }
+}
+  
   async function checkBalance() {
     try {
-
       const provider =
-        new ethers.BrowserProvider(window.ethereum);
+        new ethers.BrowserProvider(
+          window.ethereum
+        );
 
       const signer =
         await provider.getSigner();
@@ -127,21 +218,22 @@ function App() {
         );
 
       setBalance(
-        ethers.formatEther(bal)
+        Number(
+          ethers.formatEther(bal)
+        ).toFixed(4)
       );
 
     } catch (error) {
-
       console.error(error);
-
     }
   }
 
   async function checkReward() {
     try {
-
       const provider =
-        new ethers.BrowserProvider(window.ethereum);
+        new ethers.BrowserProvider(
+          window.ethereum
+        );
 
       const signer =
         await provider.getSigner();
@@ -162,189 +254,131 @@ function App() {
         );
 
       setReward(
-        ethers.formatEther(rew)
+        Number(
+          ethers.formatEther(rew)
+        ).toFixed(4)
       );
 
     } catch (error) {
-
       console.error(error);
-
     }
   }
 
-  const btnStyle = {
-    margin: "5px",
-    padding: "10px 15px",
-    borderRadius: "8px",
-    border: "none",
-    cursor: "pointer",
-    background: "#38bdf8",
-    color: "white",
-    fontWeight: "bold",
-    transition: "0.3s"
-  };
+  async function getWalletBalance() {
+    try {
+      const provider =
+        new ethers.BrowserProvider(
+          window.ethereum
+        );
+
+      const signer =
+        await provider.getSigner();
+
+      const bal =
+        await provider.getBalance(
+          await signer.getAddress()
+        );
+
+      setWalletBalance(
+        Number(
+          ethers.formatEther(bal)
+        ).toFixed(4)
+      );
+
+    } catch (error) {
+      console.error(error);
+    }
+  }
 
   return (
     <div
-      style={{
-        minHeight: "100vh",
-        background: "#0f172a",
-        color: "white",
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        fontFamily: "Arial"
-      }}
-    >
+  style={{
+    minHeight:"100vh",
+    background:
+      "radial-gradient(circle at top,#0f172a,#020617)",
+    color:"white"
+  }}
+>
+      <Navbar
+        account={account}
+        connectWallet={connectWallet}
+      />
+
       <div
         style={{
-          width: "90%",
-          maxWidth: "500px",
-          background: "#1e293b",
-          padding: "30px",
-          borderRadius: "20px",
-          textAlign: "center",
-          boxShadow: "0px 0px 20px rgba(0,0,0,0.4)"
+          maxWidth: "1500px",
+          margin: "0 auto",
+          padding: "30px"
         }}
       >
-        <h1
-            style={{
-              marginBottom: "20px",
-              color: "#38bdf8",
-              fontSize: "2rem",
-              whiteSpace: "nowrap"
-            }}
-          >
-          Staking Platform
-        </h1>
+        <div
+  style={{
+    background:
+      "linear-gradient(135deg,#0f172a,#1e293b)",
+    padding: "50px",
+    borderRadius: "30px",
+    marginBottom: "30px",
+    textAlign: "center",
+    border:
+      "1px solid rgba(255,255,255,0.08)"
+  }}
+>
+  <h1
+  style={{
+    fontSize: "3rem",
+    fontWeight: "900",
+    letterSpacing: "-0.5px",
+    textTransform: "uppercase",
+    color: "#38bdf8",
+    marginBottom: "15px"
+  }}
+>
+  DeFi Staking
+</h1>
 
-        <button
-          onClick={connectWallet}
-          style={{
-            padding: "10px 20px",
-            borderRadius: "10px",
-            border: "none",
-            cursor: "pointer",
-            marginBottom: "20px"
-          }}
-        >
-          Connect Wallet
-        </button>
+<p
+  style={{
+    color: "#94a3b8",
+    fontSize: "18px",
+    marginBottom: "25px"
+  }}
+>
+  Stake ETH, earn rewards, and manage
+your staking position on SecureChain AI Mainnet.
+</p>
 
-        <p>
-          <strong>Connected Wallet</strong>
-        </p>
+<div
+  style={{
+    display: "flex",
+    justifyContent: "center",
+    gap: "12px",
+    flexWrap: "wrap"
+  }}
+>
+</div>
+</div>
 
-        <p
-          style={{
-            wordBreak: "break-all",
-            fontSize: "14px",
-            color: "#cbd5e1"
-          }}
-        >
-          {account}
-        </p>
-
-        <input
-          type="text"
-          placeholder="Enter ETH Amount"
-          value={amount}
-          onChange={(e) =>
-            setAmount(e.target.value)
-          }
-          style={{
-            width: "90%",
-            padding: "12px",
-            marginTop: "15px",
-            borderRadius: "10px",
-            border: "none"
-          }}
+        <StatsCards
+          walletBalance={walletBalance}
+          balance={balance}
+          reward={reward}
         />
 
-        <div
-          style={{
-            marginTop: "20px"
-          }}
-        >
-          <button
-            onClick={stakeETH}
-            style={btnStyle}
-          >
-            Stake
-          </button>
+        <StakePanel
+          amount={amount}
+          setAmount={setAmount}
+          stakeETH={stakeETH}
+          withdrawETH={withdrawETH}
+          claimReward={claimReward}
+        />
 
-          <button
-            onClick={withdrawETH}
-            style={btnStyle}
-          >
-            Withdraw
-          </button>
+        <RecentActivity
+          activities={activities}
+        />
 
-          <button
-            onClick={checkBalance}
-            style={btnStyle}
-          >
-            Check Balance
-          </button>
+        <NetworkInfo account={account} />
 
-          <button
-            onClick={checkReward}
-            style={btnStyle}
-          >
-            Check Reward
-          </button>
-        </div>
-
-        <div
-          style={{
-            marginTop: "25px",
-            padding: "15px",
-            background: "#334155",
-            borderRadius: "15px"
-          }}
-        >
-          <h3>💰 Staked Balance</h3>
-
-          <h2>
-            {balance || "0"} ETH
-          </h2>
-        </div>
-
-        <div
-          style={{
-            marginTop: "15px",
-            padding: "15px",
-            background: "#334155",
-            borderRadius: "15px"
-          }}
-        >
-          <h3>🎁 Reward Balance</h3>
-
-          <h2>
-            {reward || "0"} ETH
-          </h2>
-        </div>
-
-        <div
-          style={{
-            marginTop: "20px"
-          }}
-        >
-          <p>
-            <strong>Contract Address</strong>
-          </p>
-
-          <p
-            style={{
-              wordBreak: "break-all",
-              fontSize: "13px",
-              color: "#cbd5e1"
-            }}
-          >
-            {CONTRACT_ADDRESS}
-          </p>
-        </div>
-
+        <Footer />
       </div>
     </div>
   );
