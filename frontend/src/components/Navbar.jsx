@@ -1,4 +1,5 @@
 function Navbar({ account, connectWallet }) {
+  
   return (
     <nav
       style={{

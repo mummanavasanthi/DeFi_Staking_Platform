@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { ethers } from "ethers";
 import { CONTRACT_ADDRESS, ABI } from "./contract";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 import Navbar from "./components/Navbar";
 import StatsCards from "./components/StatsCards";
@@ -18,25 +20,24 @@ function App() {
     useState("");
   const [activities, setActivities] =
   useState([]);
-
+   const hasMetaMask = !!window.ethereum;
   async function connectWallet() {
+
+  if (!window.ethereum) {
+
+    toast.warning(
+      "MetaMask is not installed. Please install MetaMask."
+    );
+
+    return;
+  }
+
   try {
-
-    console.log("CONNECT START");
-
-    if (!window.ethereum) {
-      alert("MetaMask not found");
-      return;
-    }
-
-    console.log("ETHEREUM FOUND");
 
     const provider =
       new ethers.BrowserProvider(
         window.ethereum
       );
-
-    console.log("PROVIDER CREATED");
 
     const accounts =
       await provider.send(
@@ -44,9 +45,11 @@ function App() {
         []
       );
 
-    console.log("ACCOUNTS:", accounts);
-
     setAccount(accounts[0]);
+
+    toast.success(
+      `Connected: ${accounts[0].slice(0,6)}...${accounts[0].slice(-4)}`
+    );
 
     await getWalletBalance();
     await checkBalance();
@@ -55,10 +58,13 @@ function App() {
   } catch (error) {
 
     console.error(
-      "CONNECT ERROR:",
+      "Wallet Connection Error:",
       error
     );
 
+    toast.error(
+      "Failed to connect wallet."
+    );
   }
 }
 
@@ -96,7 +102,9 @@ async function stakeETH() {
         ...prev
       ]);
       
-      alert("Stake Successful");
+      toast.success(
+  "Stake Successful"
+);
 
     await getWalletBalance();
     await checkBalance();
@@ -106,7 +114,7 @@ async function stakeETH() {
 
     console.error(error);
 
-    alert("Stake Failed");
+    toast.error("Stake Failed");
 
   }
 }
@@ -144,7 +152,7 @@ async function stakeETH() {
         ...prev
       ]);
 
-      alert("Withdraw Successful");
+      toast.success("Withdraw Successful");
 
       await getWalletBalance();
       await checkBalance();
@@ -152,7 +160,7 @@ async function stakeETH() {
 
     } catch (error) {
       console.error(error);
-      alert("Withdraw Failed");
+      toast.error("Withdraw Failed");
     }
   }
   async function claimReward() {
@@ -178,7 +186,7 @@ async function stakeETH() {
 
     await tx.wait();
 
-    alert("Reward Claimed");
+    toast.success("Reward Claimed");
 
     await getWalletBalance();
     await checkReward();
@@ -187,7 +195,7 @@ async function stakeETH() {
 
     console.error(error);
 
-    alert("Claim Failed");
+    toast.error("Claim Failed");
 
   }
 }
@@ -289,7 +297,6 @@ async function stakeETH() {
       console.error(error);
     }
   }
-
   return (
     <div
   style={{
@@ -303,6 +310,7 @@ async function stakeETH() {
         account={account}
         connectWallet={connectWallet}
       />
+
 
       <div
         style={{
@@ -379,6 +387,10 @@ your staking position on SecureChain AI Mainnet.
         <NetworkInfo account={account} />
 
         <Footer />
+        <ToastContainer
+        position="top-right"
+        autoClose={3000}
+          />
       </div>
     </div>
   );
