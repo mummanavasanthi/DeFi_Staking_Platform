@@ -183,7 +183,7 @@ Add SecureChain AI Mainnet to MetaMask:
 | --------------- | ------------------------------- |
 | Network Name    | SecureChain AI Mainnet          |
 | Chain ID        | 34                              |
-| Currency Symbol | ETH                             |
+| Currency Symbol | SCAI                             |
 | Explorer        | https://explorer.securechain.ai |
 
 After configuration:
@@ -316,8 +316,8 @@ https://explorer.securechain.ai
 The following functionalities were tested successfully:
 
 * Wallet Connection
-* ETH Staking
-* ETH Withdrawal
+* SCAI Staking
+* SCAI Withdrawal
 * Reward Calculation
 * Reward Claiming
 * Balance Retrieval
