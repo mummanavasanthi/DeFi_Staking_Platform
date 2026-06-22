@@ -28,7 +28,7 @@ function StakePanel({
           marginBottom: "10px"
         }}
       >
-        Stake ETH
+        Stake SCAI
       </h2>
 
       <p
@@ -37,7 +37,7 @@ function StakePanel({
           marginBottom: "25px"
         }}
       >
-        Deposit ETH into the staking pool and earn rewards over time.
+        Deposit SCAI into the staking pool and earn rewards over time.
       </p>
 
       <div
@@ -63,7 +63,7 @@ function StakePanel({
               color: "#94a3b8"
             }}
           >
-            Amount
+            Amount SCAI
           </span>
 
           <span
@@ -71,7 +71,7 @@ function StakePanel({
               color: "#38bdf8"
             }}
           >
-            ETH
+            SCAI
           </span>
         </div>
 

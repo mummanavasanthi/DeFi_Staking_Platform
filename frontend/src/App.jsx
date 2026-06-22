@@ -94,8 +94,8 @@ async function stakeETH() {
       await tx.wait();
       setActivities(prev => [
         {
-          type: "Stake ETH",
-          amount: `+${amount} ETH`,
+          type: "Stake SCAI",
+          amount: `+${amount} SCAI`,
           time: "Just now",
           color: "#22c55e"
         },
@@ -112,11 +112,16 @@ async function stakeETH() {
 
   } catch (error) {
 
-    console.error(error);
+  console.error("STAKE ERROR:", error);
 
-    toast.error("Stake Failed");
+  toast.error(
+    error.reason ||
+    error.shortMessage ||
+    error.message ||
+    "Stake Failed"
+  );
 
-  }
+}
 }
   async function withdrawETH() {
     try {
@@ -144,8 +149,8 @@ async function stakeETH() {
 
       setActivities(prev => [
         {
-          type: "Withdraw ETH",
-          amount: `-${amount} ETH`,
+          type: "Withdraw SCAI",
+          amount: `-${amount} SCAI`,
           time: "Just now",
           color: "#ef4444"
         },
@@ -159,9 +164,17 @@ async function stakeETH() {
       await checkReward();
 
     } catch (error) {
-      console.error(error);
-      toast.error("Withdraw Failed");
-    }
+
+  console.error("WITHDRAW ERROR:", error);
+
+  toast.error(
+    error.reason ||
+    error.shortMessage ||
+    error.message ||
+    "Withdraw Failed"
+  );
+
+}
   }
   async function claimReward() {
   try {
@@ -185,6 +198,15 @@ async function stakeETH() {
       await contract.claimReward();
 
     await tx.wait();
+    setActivities(prev => [
+  {
+    type: "Claim Reward",
+    amount: `+${reward} SCAI`,
+    time: "Just now",
+    color: "#facc15"
+  },
+  ...prev
+]);
 
     toast.success("Reward Claimed");
 
@@ -351,7 +373,7 @@ async function stakeETH() {
     marginBottom: "25px"
   }}
 >
-  Stake ETH, earn rewards, and manage
+  Stake SCAI, earn rewards, and manage
 your staking position on SecureChain AI Mainnet.
 </p>
 

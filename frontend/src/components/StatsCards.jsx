@@ -54,7 +54,7 @@ function StatsCards({
             color: "#64748b"
           }}
         >
-          Available ETH
+          Available SCAI
         </small>
       </div>
 
@@ -90,7 +90,7 @@ function StatsCards({
             color: "#64748b"
           }}
         >
-          Staked ETH
+          Staked SCAI
         </small>
       </div>
 
